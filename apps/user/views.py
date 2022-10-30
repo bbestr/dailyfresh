@@ -1,6 +1,7 @@
 import re
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 from goods.models import GoodsSKU
 from order.models import OrderInfo, OrderGoods
 from user.models import User, Address
@@ -134,15 +135,15 @@ class RegisterView(View):
         token = serailser.dumps(info)
         token = token.decode('utf8')
         #发邮件  使用celery+redis
-        subject = '天天生鲜best'
-        message1 = ''
-        message = '<h1>%s,欢迎你,请点击下列连接激活账户</h1>点击下列连接激活<br/><a href="http://127.0.0.1:8000/user/active/%s">http://127.0.0.1:8000/user/active/%s</a>' % (
-            username, token, token)
-        sender = settings.EMAIL_FROM
-        receiver = [email]
-        send_mail(subject, message1, sender, receiver, html_message=message)
+        # subject = '天天生鲜best'
+        # message1 = ''
+        # message = '<h1>%s,欢迎你,请点击下列连接激活账户</h1>点击下列连接激活<br/><a href="http://127.0.0.1:8000/user/active/%s">http://127.0.0.1:8000/user/active/%s</a>' % (
+        #     username, token, token)
+        # sender = settings.EMAIL_FROM
+        # receiver = [email]
+        # send_mail(subject, message1, sender, receiver, html_message=message)
 
-        # send_register_active_email.delay(email,username,token)  #使用celery 发送邮件
+        send_register_active_email.delay(email,username,token)  #使用celery 发送邮件
 
         # 返回应答 跳转首页
         return redirect(reverse('goods:index'))
@@ -248,10 +249,62 @@ class LogoutView(LoginRequiredMixin,View):
 
 class UserOrderView(View):
     """用户订单页"""
-    def get(self,request):
-        #获取用户订单信息
-        # return render(request,'user_center_order.html',{'page':'order'})
-        pass
+
+    def get(self, request, page):
+        # 获取用户的订单信息
+        user = request.user
+        orders = OrderInfo.objects.filter(user=user).order_by('-create_time')
+
+        # 遍历获取订单商品信息
+        for order in orders:
+            # 根据order_id查询订单商品信息
+            order_skus = OrderGoods.objects.filter(order_id=order.order_id)
+
+            # 遍历Order_skus计算商品的小计
+            for order_sku in order_skus:
+                amount = order_sku.count * order_sku.price
+                # 动态给order_sku增加属性amount,保存订单商品小计
+                order_sku.amount = amount
+
+            # 动态给order增加属性, 保存订单状态标题
+            order.status_name = OrderInfo.ORDER_STATUS[order.order_status]
+            order.order_skus = order_skus
+
+        # 分页
+        paginator = Paginator(orders, 2)  # 单页显示数目2
+
+        try:
+            page = int(page)
+        except Exception as e:
+            page = 1
+
+        if page > paginator.num_pages or page <= 0:
+            page = 1
+
+        # 获取第page页的Page实例对象
+        order_page = paginator.page(page)
+
+        # todo: 进行页码的控制，页面上最多显示5个页码
+        # 1. 总数不足5页，显示全部
+        # 2. 如当前页是前3页，显示1-5页
+        # 3. 如当前页是后3页，显示后5页
+        # 4. 其他情况，显示当前页的前2页，当前页，当前页的后2页
+        num_pages = paginator.num_pages
+        if num_pages < 5:
+            pages = range(1, num_pages)
+        elif page <= 3:
+            pages = range(1, 6)
+        elif num_pages - page <= 2:
+            pages = range(num_pages - 4, num_pages + 1)
+        else:
+            pages = range(page - 2, page + 3)
+
+        # 组织上下文
+        context = {'order_page': order_page,
+                   'pages': pages,  # 页面范围控制
+                   'page': 'order'}
+
+        return render(request, 'user_center_order.html', context)
 
 
 class AddressView(View):

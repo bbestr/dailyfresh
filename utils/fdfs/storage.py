@@ -3,7 +3,7 @@
 
 from django.core.files.storage import Storage
 from django.conf import settings
-from fdfs_client.client import Fdfs_client
+from fdfs_client.client import Fdfs_client, get_tracker_conf
 
 
 class FDFSStorage(Storage):
@@ -11,7 +11,8 @@ class FDFSStorage(Storage):
     def __init__(self, client_conf=None, base_url=None):
         """初始化"""
         if client_conf is None:
-            client_conf = settings.FDFS_CLIENT_CONF
+            # client_conf = settings.FDFS_CLIENT_CONF
+            client_conf = get_tracker_conf(r'E:\codee\dailyfresh\utils\fdfs\client.conf')
         self.client_conf = client_conf
 
         if base_url is None:
@@ -29,9 +30,10 @@ class FDFSStorage(Storage):
 
         # 创建一个Fdfs_client对象
         client = Fdfs_client(self.client_conf)
+        # client = Fdfs_client('./utils/fdfs/client_conf')
 
         # 上传文件到fastdfs系统中
-        res = client.upload_by_buffer(content.read())
+        res = client.upload_by_buffer(content.read()).decode()
 
         # res 返回 dict
         # {
