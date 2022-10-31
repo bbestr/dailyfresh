@@ -13,12 +13,16 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from apps.goods import views
+from goods.views import IndexView,DetailView,ListView
 from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path, include
 
+app_name = 'goods'
 urlpatterns = [
     # 商品界面  直接显示  所以匹配全部
-    url(r'^$',views.index,name='index') #首页
+    # url(r'^$',views.index,name='index') #首页
+    url(r'^index/$', IndexView.as_view(),name='index'),  # 商品页作为首页
+    url(r'^goods/(?P<goods_id>\d+)$', DetailView.as_view(), name='detail'),  # 详情页
+    url(r'^list/(?P<type_id>\d+)/(?P<page>\d+)$', ListView.as_view(), name='list'),  # 列表页
 ]

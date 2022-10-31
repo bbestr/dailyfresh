@@ -11,8 +11,10 @@ class FDFSStorage(Storage):
     def __init__(self, client_conf=None, base_url=None):
         """初始化"""
         if client_conf is None:
+            print("client == None")
             # client_conf = settings.FDFS_CLIENT_CONF
             client_conf = get_tracker_conf(r'E:\codee\dailyfresh\utils\fdfs\client.conf')
+        print("client ！= NOne")
         self.client_conf = client_conf
 
         if base_url is None:
@@ -29,12 +31,13 @@ class FDFSStorage(Storage):
         # content: 包含上传文件内容的File对象
 
         # 创建一个Fdfs_client对象
+        print("创建一个Fdfs——client对象")
         client = Fdfs_client(self.client_conf)
         # client = Fdfs_client('./utils/fdfs/client_conf')
-
+        print("上传文件到fastdfs")
         # 上传文件到fastdfs系统中
-        res = client.upload_by_buffer(content.read()).decode()
-
+        res = client.upload_by_buffer(content.read())
+        print("success")
         # res 返回 dict
         # {
         #     'Group name': group_name,
@@ -48,8 +51,8 @@ class FDFSStorage(Storage):
             raise Exception('上传文件到FastDFS失败')
 
         # 获取返回的文件ID
-        filename = res.get('Remote file_id')
-
+        filename = res.get('Remote file_id').decode()
+        print(type(filename))
         return filename
 
     def exists(self, name):

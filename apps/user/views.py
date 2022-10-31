@@ -2,6 +2,7 @@ import re
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
+from django.template import RequestContext
 from goods.models import GoodsSKU
 from order.models import OrderInfo, OrderGoods
 from user.models import User, Address
@@ -125,7 +126,6 @@ class RegisterView(View):
         # 默认没激活
         user.is_active = 0
         user.save()
-
         #发送激活邮件  把包含激活连接: http:127.0.0.1:8000/user/active(userid)
         # 需要包含每个用户的信息    需要加密处理
         #加密 用户信息  生产token
@@ -143,8 +143,8 @@ class RegisterView(View):
         # receiver = [email]
         # send_mail(subject, message1, sender, receiver, html_message=message)
 
-        send_register_active_email.delay(email,username,token)  #使用celery 发送邮件
 
+        send_register_active_email.delay(email,username,token)  #使用celery 发送邮件
         # 返回应答 跳转首页
         return redirect(reverse('goods:index'))
 
