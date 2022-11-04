@@ -21,35 +21,27 @@ class IndexView(View):
         """显示"""
         # 先判断缓存中是否有数据,没有数据不会报错返回None
         context = cache.get('index_page_data')
-
-        if context is None:
             # 查询商品的分类信息
-            print("没缓存")
-            types = GoodsType.objects.all()
-            # 获取首页轮播的商品的信息
-            index_banner = IndexGoodsBanner.objects.all().order_by('index')
-            # 获取首页促销的活动信息
-            promotion_banner = IndexPromotionBanner.objects.all().order_by('index')
+        types = GoodsType.objects.all()
+        # 获取首页轮播的商品的信息
+        index_banner = IndexGoodsBanner.objects.all().order_by('index')
+        # 获取首页促销的活动信息
+        promotion_banner = IndexPromotionBanner.objects.all().order_by('index')
 
-            # 获取首页分类商品信息展示
-            for type in types:
-                # 查询首页显示的type类型的文字商品信息
-                title_banner = IndexTypeGoodsBanner.objects.filter(type=type, display_type=0).order_by('index')
-                # 查询首页显示的图片商品信息
-                image_banner = IndexTypeGoodsBanner.objects.filter(type=type, display_type=1).order_by('index')
-                # 动态给type对象添加两个属性保存数据
-                type.title_banner = title_banner
-                type.image_banner = image_banner
+        # 获取首页分类商品信息展示
+        for type in types:
+            # 查询首页显示的type类型的文字商品信息
+            title_banner = IndexTypeGoodsBanner.objects.filter(type=type, display_type=0).order_by('index')
+            # 查询首页显示的图片商品信息
+            image_banner = IndexTypeGoodsBanner.objects.filter(type=type, display_type=1).order_by('index')
+            # 动态给type对象添加两个属性保存数据
+            type.title_banner = title_banner
+            type.image_banner = image_banner
 
-            # 组织上下文
-            context = {
-                'types': types,
-                'index_banner': index_banner,
-                'promotion_banner': promotion_banner,
-            }
+        # 组织上下文
 
-            # 设置缓存数据,缓存的名字，内容，过期的时间
-            cache.set('index_page_data', context, 3600)
+        # 设置缓存数据,缓存的名字，内容，过期的时间
+        cache.set('index_page_data', context, 3600)
 
         # 获取user
         user = request.user
@@ -63,7 +55,15 @@ class IndexView(View):
             # 获取用户购物车中的商品条目数
             cart_count = conn.hlen(cart_key)  # hlen hash中的数目
 
-            context.update(cart_count=cart_count)
+        else:
+            cart_count = 0
+
+        context = {
+            'types': types,
+            'index_banner': index_banner,
+            'promotion_banner': promotion_banner,
+            'cart_count' : cart_count,
+        }
 
         return render(request, 'index.html', context)
 # /good/商品id
