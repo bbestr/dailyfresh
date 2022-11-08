@@ -62,7 +62,7 @@ class IndexView(View):
             'types': types,
             'index_banner': index_banner,
             'promotion_banner': promotion_banner,
-            'cart_count' : cart_count,
+            'cart_count': cart_count,
         }
 
         return render(request, 'index.html', context)
@@ -115,7 +115,8 @@ class DetailView(View):
                    'same_spu_skus': same_spu_skus,
                    'cart_count': cart_count}
 
-        return render(request, 'df_goods/detail.html', context)
+        return render(request, 'detail.html', context)
+
 
 
 # 种类id 页码 排序方式
@@ -147,8 +148,8 @@ class ListView(View):
             sort = 'default'
             skus = GoodsSKU.objects.filter(type=type).order_by('-id')  # 默认
 
-        # 对数据进行分页
-        paginator = Paginator(skus, 2)
+        # 对数据进行分页 每页十条
+        paginator = Paginator(skus, 10)
         try:
             page = int(page)
         except Exception as e:
@@ -190,11 +191,12 @@ class ListView(View):
             cart_count = conn.hlen(cart_key)  # hlen hash中的数目
 
         # 组织模版上下文
-        context = {'type': type, 'types': types,
+        context = {'type': type,
+                   'types': types,
                    'sort': sort,
                    'skus_page': skus_page,
                    'new_skus': new_skus,
                    'pages': pages,
                    'cart_count': cart_count}
 
-        return render(request, 'df_goods/list.html', context)
+        return render(request, 'list.html', context)

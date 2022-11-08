@@ -20,6 +20,7 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^tinymce/',include('tinymce.urls')),
+    url(r'^search',include('haystack.urls')),
     url(r'^user/',include(('user.urls','user'),namespace='user')),#用户
     url(r'^cart/',include(('cart.urls','cart'),namespace='cart')),#购物车
     url(r'^order/',include(('order.urls','order'),namespace='order')),#订单

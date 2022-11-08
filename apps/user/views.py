@@ -337,14 +337,14 @@ class AddressView(View):
 
         # 数据校验
         if not all([receiver, addr, phone]):
-            return render(request, 'df_user/user_center_site.html',
+            return render(request, 'user_center_site.html',
                           {'page': 'address',
                            'address': address,
                            'errmsg': '数据不完整'})
 
         # 校验手机号
         if not re.match(r'^1([3-8][0-9]|5[189]|8[6789])[0-9]{8}$', phone):
-            return render(request, 'df_user/user_center_site.html',
+            return render(request, 'user_center_site.html',
                           {'page': 'address',
                            'address': address,
                            'errmsg': '手机号格式不合法'})

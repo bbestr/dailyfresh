@@ -4,4 +4,3 @@ from django.shortcuts import render
 from django.template import RequestContext
 from requests import request
 
-RequestContext

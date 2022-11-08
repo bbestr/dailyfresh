@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 {% load static %}
@@ -35,7 +34,7 @@
 					<span>|</span>
 					<a href="{% url 'user:user' %}">用户中心</a>
 					<span>|</span>
-					<a href="">我的购物车</a>
+					<a href="{% url 'cart:cart' %}">我的购物车</a>
 					<span>|</span>
 					<a href="">我的订单</a>
 				</div>
@@ -58,7 +57,7 @@
 
     {% block cart_bar %}
 		<div class="guest_cart fr">
-			<a href="" class="cart_name fl">我的购物车</a>
+			<a href="{% url 'cart:cart' %}" class="cart_name fl">我的购物车</a>
             {% if cart_count %}
 			    <div class="goods_count fl" id="show_count">{{ cart_count }}</div>
             {% else %}

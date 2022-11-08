@@ -15,10 +15,7 @@ Including another URLconf
 """
 from goods.views import IndexView,DetailView,ListView
 from django.conf.urls import url
-from django.contrib import admin
-from django.urls import path, include
 
-app_name = 'goods'
 urlpatterns = [
     # 商品界面  直接显示  所以匹配全部
     # url(r'^$',views.index,name='index') #首页
