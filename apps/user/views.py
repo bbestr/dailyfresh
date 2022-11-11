@@ -215,13 +215,17 @@ class UserInfoView(LoginRequiredMixin,View):
         #request.user.is_authenticated
         #除了传给模板文件模板变量外 django框架还会吧request.user传给模板文件
         user = request.user
+        print("-------------------------------------------")
         address = Address.objects.get_default_address(user)
+        print(user)
+        print(address)
+        print("-------------------------------------------")
 
         #获取用户信息
 
         #获取用户历史浏览记录
         from redis import StrictRedis
-        sr = StrictRedis(host='127.0.0.1',port='6379',db=9)
+        sr = StrictRedis(host='127.0.0.1',port=6379,db=9)
 
         #取redis中的数据
         history_key = 'history_%d'%user.id
@@ -232,12 +236,14 @@ class UserInfoView(LoginRequiredMixin,View):
         #     for good in goods_li:
         #         if i.id == good.id:
         #             goods_res.append(good)
+        # goods = GoodsSKU.objects.filter(id__in=sku_idsid)
+        # goods_li.append(goods)
         for id in sku_ids:
             goods = GoodsSKU.objects.get(id=id)
             goods_li.append(goods)
 
         context = {'page':'user','address':address,'goods_li':goods_li}
-
+        print("*--------------------------***********")
         return render(request,'user_center_info.html',context)
 class LogoutView(LoginRequiredMixin,View):
     """登出"""
@@ -310,8 +316,23 @@ class UserOrderView(View):
 class AddressView(View):
     """用户地址页"""
     def get(self,request):
-        #获取用户默认地址
-        return render(request, 'user_center_site.html',{'page':'address'})
+        # django框架会给request对象添加一个属性user
+        # 如果用户已登录，user的类型User
+        # 如果用户没登录，user的类型AnonymousUser
+        # 除了我们给django传递的模板变量，django还会把user传递给模板文件
+
+        # 获取用户的默认地址
+        # 获取登录用户对应User对象
+        user = request.user
+
+        # try:
+        #     address = Address.objects.get(user=user, is_default=True)
+        # except Address.DoesNotExist:
+        #     address = None  # 不存在默认地址
+        address = Address.objects.get_default_address(user)
+
+        return render(request, 'user_center_site.html',
+                      {'title': '用户中心-收货地址', 'page': 'address', 'address': address})
     def post(self,request):
         """地址的添加"""
         #修改地址信息

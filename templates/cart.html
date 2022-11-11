@@ -15,8 +15,8 @@
 	</ul>
 
 
-    <form method="post" action="">
-    {% csrf_token%}
+    <form method="post" action="/order/place">
+    {% csrf_token %}
     {% for sku in skus %}
 	<ul class="cart_list_td clearfix">
 		<li class="col01"><input type="checkbox" name="sku_ids"  value="{{ sku.id }}"></li>
@@ -57,7 +57,9 @@
         $('.cart_list_td').find(':checked').parents('ul').each(function () {
             // 获取商品的数目和小计
             count = $(this).find('.num_show').val()
+			//count = $(this).find('.num_show').val()
             amount = $(this).children('.col07').text()
+            //amount = $(this).children('.col07').text()
             // 累加计算商品的总件数和总金额
             total_count += parseInt(count)
             total_price += parseFloat(amount)
@@ -80,7 +82,7 @@
     }
 
     // 全选和全不选
-    $('.settlements').find(':checkbox').change(function () {
+    $('.settlements').find(':checkbox').change(function() {
         // 获取全选checkbox的选中状态
         var is_checked = $(this).prop('checked')
         // 设置商品的checkbox和全选的checkbox状态保持一致
@@ -92,11 +94,14 @@
     })
 
     // 商品的checkbox状态发生改变时，设置全选checkbox的状态改变
+    //$('.cart_list_td').find(':checkbox').change(function () {
     $('.cart_list_td').find(':checkbox').change(function () {
         // 获取所有商品checkbox的数目
         var all_len = $('.cart_list_td').find(':checkbox').length
+        // $('.cart_list_td').find(':checkbox').length
         // 获取被选中的商品checkbox的数目
         var check_len = $('.cart_list_td').find(':checked').length
+        //$('.cart_list_td').find(':checked').length
         // 判断
         var is_checked = true
         if (check_len < all_len){
@@ -152,8 +157,10 @@
             $(this).next().val(count)
             // 更新商品的小计
             update_sku_amount($(this).parents('ul'))
+            //
             // 判断是否更新选中商品的总件数和总金额
             is_checked = $(this).parents('ul').find(':checkbox').prop('checked')
+            // $(this).parents('ul').find(':checkbox').prop('checked')
             if (is_checked){
                 // 更新页面信息
                 update_page_info()

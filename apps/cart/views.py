@@ -111,11 +111,17 @@ class CartInfoView(LoginRequiredMixin, View):
 class CartUpdateView(View):
     """购物车记录更新"""
     def post(self, request):
+
+
+
         user = request.user
         if not user.is_authenticated:
             return JsonResponse({'res': 0, 'errmsg': '请先登录'})
 
+
         # 接收数据
+        # sku_id = request.POST.get('sku_id')
+        # count = request.POST.get('count')
         sku_id = request.POST.get('sku_id')
         count = request.POST.get('count')
 

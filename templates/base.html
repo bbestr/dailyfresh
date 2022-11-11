@@ -19,7 +19,7 @@
 				{# 判断登录 #}
                 {% if user.is_authenticated %}
 				<div class="login_btn fl">
-					欢迎您：<em><a href="{% url 'user:user' %}">{{ user.username }}</a></em>
+					欢迎您：<em><a href="#">{{ user.username }}</a></em>
                     <span>|</span>
 					<a href="{% url 'user:logout' %}">退出</a>
 				</div>
@@ -36,7 +36,7 @@
 					<span>|</span>
 					<a href="{% url 'cart:cart' %}">我的购物车</a>
 					<span>|</span>
-					<a href="">我的订单</a>
+					<a href="{% url 'user:order' 1 %}">我的订单</a>
 				</div>
 			</div>
 		</div>
@@ -46,7 +46,7 @@
 {# 网页搜索框块 #}
 {% block search_bar %}
 	<div class="search_bar clearfix">
-		<a href="" class="logo fl"><img src="{% static 'images/logo.png' %}"></a>
+		<a href="/index" class="logo fl"><img src="{% static 'images/logo.png' %}"></a>
 		<div class="search_con fl">
             <form action="/search" method="get">
                 <input type="text" class="input_text fl" name="q" placeholder="搜索商品">

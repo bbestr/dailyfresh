@@ -99,7 +99,8 @@ class DetailView(View):
             cart_count = conn.hlen(cart_key)  # hlen hash中的数目
 
             # 添加用户的历史记录
-            conn = get_redis_connection('default')
+            from redis import StrictRedis
+            conn = StrictRedis(host='127.0.0.1', port=6379, db=9)
             history_key = 'history_%d' % user.id
             # 移除列表中的goods_id
             conn.lrem(history_key, 0, goods_id)
